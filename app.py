@@ -29,3 +29,7 @@ def index():
                            votes=list(popular_df['num_ratings'].values),
                            rating=list(popular_df['avg_rating'].values)
                            )
+
+@app.route('/recommend')
+def recommend_ui():
+    return render_template('recommend.html')
