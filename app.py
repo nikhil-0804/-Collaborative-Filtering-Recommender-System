@@ -19,3 +19,13 @@ for author, titles in author_to_books.items():
 
 app = Flask(__name__)
 GOOGLE_BOOKS_API_KEY = 'AIzaSyBTemKev3WkA2JHQuRK1P7b3Qdn69JbsPk'
+
+@app.route('/')
+def index():
+    return render_template('index.html',
+                           book_name=list(popular_df['Book-Title'].values),
+                           author=list(popular_df['Book-Author'].values),
+                           image=list(popular_df['Image-URL-M'].values),
+                           votes=list(popular_df['num_ratings'].values),
+                           rating=list(popular_df['avg_rating'].values)
+                           )
