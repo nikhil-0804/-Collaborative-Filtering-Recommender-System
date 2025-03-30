@@ -50,3 +50,7 @@ def recommend():
         data.append(item)
 
     return render_template('recommend.html', data=data)
+
+@app.route('/author')
+def author_ui():
+    return render_template('author.html')
