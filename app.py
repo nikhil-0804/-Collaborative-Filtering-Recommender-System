@@ -16,3 +16,6 @@ book_to_author = defaultdict(list)
 for author, titles in author_to_books.items():
     for title in titles:
         book_to_author[title].append(author)
+
+app = Flask(__name__)
+GOOGLE_BOOKS_API_KEY = 'AIzaSyBTemKev3WkA2JHQuRK1P7b3Qdn69JbsPk'
