@@ -18,7 +18,7 @@ for author, titles in author_to_books.items():
         book_to_author[title].append(author)
 
 app = Flask(__name__)
-GOOGLE_BOOKS_API_KEY = 'AIzaSyBTemKev3WkA2JHQuRK1P7b3Qdn69JbsPk'
+GOOGLE_BOOKS_API_KEY = ''
 
 @app.route('/')
 def index():
@@ -33,3 +33,9 @@ def index():
 @app.route('/recommend')
 def recommend_ui():
     return render_template('recommend.html')
+
+@app.route('/recommend_books', methods=['POST'])
+def recommend():
+    user_input = request.form.get('user_input')
+    index = np.where(pt.index == user_input)[0][0]
+    similar_items = sorted(list(enumerate(similarity_scores[index])), key=lambda x: x[1], reverse=True)[1:5]
