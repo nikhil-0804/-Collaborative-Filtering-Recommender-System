@@ -54,3 +54,34 @@ def recommend():
 @app.route('/author')
 def author_ui():
     return render_template('author.html')
+
+@app.route('/recommend_by_author', methods=['POST'])
+def recommend_by_author():
+    user_input = request.form.get('user_input')
+    data = []
+    found_books = False
+
+    if user_input in author_to_books:
+        author_books = author_to_books[user_input]
+        processed_books = set()
+        
+        for book in author_books:
+            if book in pt.index and book not in processed_books:
+                index = np.where(pt.index == book)[0][0]
+                similar_items = sorted(list(enumerate(similarity_scores[index])), 
+                                 key=lambda x: x[1], reverse=True)[1:5]
+                
+                for i in similar_items:
+                    item = []
+                    temp_df = books[books['Book-Title'] == pt.index[i[0]]]
+                    item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Title'].values))
+                    item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Author'].values))
+                    item.extend(list(temp_df.drop_duplicates('Book-Title')['Image-URL-M'].values))
+                    data.append(item)
+                    found_books = True
+                processed_books.add(book)
+
+    if not found_books:
+        return render_template('author.html', data=None, message=f"No recommendations found for '{user_input}'")
+    
+    return render_template('author.html', data=data, message=None)
