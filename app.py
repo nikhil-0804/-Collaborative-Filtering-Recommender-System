@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+from AudioBookFeature.audio import audiobooks_bp
 import pickle
 import numpy as np
 import requests
+import os
 from collections import defaultdict
 
 # Load precomputed data
@@ -18,7 +20,10 @@ for author, titles in author_to_books.items():
         book_to_author[title].append(author)
 
 app = Flask(__name__)
-GOOGLE_BOOKS_API_KEY = ''
+app.register_blueprint(audiobooks_bp, url_prefix='/audiobooks')
+
+# Use environment variable for API key
+GOOGLE_BOOKS_API_KEY = os.getenv('GOOGLE_BOOKS_API_KEY', 'AIzaSyCgnf0Rtv57uo-PjRRz48sRG2v_WU1wZr8')
 
 @app.route('/')
 def index():
@@ -85,3 +90,55 @@ def recommend_by_author():
         return render_template('author.html', data=None, message=f"No recommendations found for '{user_input}'")
     
     return render_template('author.html', data=data, message=None)
+
+@app.route('/genres')
+def genres_ui():
+    return render_template('genre.html')
+
+@app.route('/get_books')
+def get_books():
+    genre = request.args.get('genre')
+    if not genre:
+        return jsonify([])
+    
+    try:
+        url = f'https://www.googleapis.com/books/v1/volumes?q=subject:{genre}&maxResults=15&key={GOOGLE_BOOKS_API_KEY}'
+        response = requests.get(url)
+        data = response.json()
+        
+        books = []
+        for item in data.get('items', []):
+            volume_info = item.get('volumeInfo', {})
+            book_data = {
+                'Book-Title': volume_info.get('title', 'Unknown Title'),
+                'Book-Author': ', '.join(volume_info.get('authors', ['Unknown Author'])),
+                'Image-URL-M': volume_info.get('imageLinks', {}).get('thumbnail', '')
+            }
+            books.append(book_data)
+        
+        return jsonify(books)
+    
+    except Exception as e:
+        print(f"Error fetching books: {e}")
+        return jsonify([])
+
+
+@app.route('/autocomplete')
+def autocomplete():
+    query = request.args.get('query', '').lower()
+    suggestions = [title for title in pt.index if query in title.lower()]
+    return jsonify(suggestions[:10])
+
+@app.route('/get_authors')
+def get_authors():
+    search_term = request.args.get('q', '').lower()
+    all_authors = list(author_to_books.keys())
+    filtered_authors = [author for author in all_authors if search_term in author.lower()]
+    return jsonify(sorted(filtered_authors)[:10])
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+    
