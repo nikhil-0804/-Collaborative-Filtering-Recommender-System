@@ -1,0 +1,172 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender System</title>
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<style>
+    .text-white{
+        color:white
+    }
+</style>
+<body style="background-color:black">
+
+    <nav class="navbar" style="background-color:#56a883">
+        <a class="navbar-brand">My Book recommender</a>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/recommend">Recommend by Book</a></li>
+            <li><a href="/author">Recommend by Author</a></li>
+            <li><a href="/genres">Recommend by Genre</a></li>
+            <li><a href="{{ url_for('audiobooks.audiobooks') }}">premiumUser</a></li>
+            <li><a>Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-white" style="font-size:50px">Top 50 Books</h1>
+            </div>
+
+            {% for i in range(book_name|length) %}
+                <div class="col-md-3" style="margin-top:50px">
+                    <div class="card">
+                        <div class="card-body">
+                            <img class="card-img-top" src="{{ image[i] }}">
+                            <p class="text-white">{{ book_name[i] }}</p>
+                            <h4 class="text-white">{{ author[i] }}</h4>
+                            <h4 class="text-white">Votes - {{ votes[i] }}</h4>
+                            <h4 class="text-white">Rating - {{ rating[i] }}</h4>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        /* Premium Navigation Bar Styling */
+        .navbar {
+            background: #56a883;
+            border-radius: 0;
+            border: none;
+            margin-bottom: 30px;
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 20px;
+        }
+        .nav li a {
+            color: rgba(255,255,255,0.9) !important;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            padding: 15px 20px;
+        }
+        .nav li a:hover {
+            color: white !important;
+            transform: translateY(-2px);
+            background: transparent !important;
+        }
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(86, 168, 131, 0.2);
+        }
+        .card-img-top {
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+        .card-body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand">My Book Recommender</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recommend">Recommend by Book</a></li>
+                <li><a href="/author">Recommend by Author</a></li>
+                <li><a href="/genres">Recommend by Genre</a></li>
+                <li><a href="{{ url_for('audiobooks.audiobooks') }}">Premium</a></li>
+                <li><a>Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center" style="font-size: 2.5rem; margin-bottom: 40px; color: #56a883">
+                    Top 50 Books
+                </h1>
+            </div>
+
+            {% for i in range(book_name|length) %}
+                <div class="col-md-3" style="margin-top: 30px; margin-bottom: 30px">
+                    <div class="card">
+                        <div class="card-body">
+                            <img class="card-img-top" src="{{ image[i] }}" 
+                                 onerror="this.src='https://via.placeholder.com/300x400/1a1a1a/56a883?text=Cover+Not+Available'">
+                            <h4 class="text-white" style="margin-top: 15px">{{ book_name[i] }}</h4>
+                            <p class="text-muted">{{ author[i] }}</p>
+                            <div style="border-top: 1px solid #2a2a2a; padding-top: 10px">
+                                <small class="text-muted">Votes: {{ votes[i] }}</small><br>
+                                <small class="text-muted">Rating: {{ rating[i] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
