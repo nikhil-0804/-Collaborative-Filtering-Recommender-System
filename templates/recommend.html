@@ -1,0 +1,260 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender System</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .text-white {
+            color: white;
+        }
+        #suggestions {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            width: 100%;
+            display: none;
+            position: absolute;
+            background-color: white;
+            z-index: 1000;
+        }
+        .suggestion-item {
+            padding: 8px;
+            cursor: pointer;
+            color: black;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body style="background-color: black">
+
+    <nav class="navbar" style="background-color: #56a883">
+        <a class="navbar-brand">My Book Recommender</a>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/recommend">Recommend by Book</a></li>
+            <li><a href="/author">Recommend by Author</a></li>
+            <li><a href="/genres">Recommend by Genre</a></li>
+            <li><a href="{{ url_for('audiobooks.audiobooks') }}">premiumUser</a></li>
+            <li><a>Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-white" style="font-size: 50px">Recommend Books</h1>
+                <form action="/recommend_books" method="post">
+                    <input name="user_input" id="book_input" type="text" class="form-control" autocomplete="off"><br>
+                    <div id="suggestions"></div>
+                    <input type="submit" class="btn btn-lg btn-warning">
+                </form>
+            </div>
+
+            {% if data %}
+                {% for i in data %}
+                    <div class="col-md-3" style="margin-top: 50px">
+                        <div class="card">
+                            <div class="card-body">
+                                <img class="card-img-top" src="{{ i[2] }}">
+                                <p class="text-white">{{ i[0] }}</p>
+                                <h4 class="text-white">{{ i[1] }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const bookInput = document.getElementById('book_input');
+        const suggestionsDiv = document.getElementById('suggestions');
+
+        bookInput.addEventListener('input', async function () {
+            const query = this.value;
+            if (query.length < 2) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const response = await fetch(`/autocomplete?query=${query}`);
+            const suggestions = await response.json();
+
+            if (suggestions.length > 0) {
+                suggestionsDiv.innerHTML = suggestions.map(book => `
+                    <div class="suggestion-item" onclick="selectSuggestion('${book}')">${book}</div>
+                `).join('');
+                suggestionsDiv.style.display = 'block';
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+
+        function selectSuggestion(book) {
+            bookInput.value = book;
+            suggestionsDiv.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
+
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>Book Recommender System</title>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+     <style>
+         /* Premium Navigation Bar Styling */
+         .navbar {
+             background: #56a883;
+             border-radius: 0;
+             border: none;
+             margin-bottom: 30px;
+         }
+         .navbar-brand {
+             color: white !important;
+             font-weight: bold;
+             letter-spacing: 1px;
+             font-size: 20px;
+         }
+         .nav li a {
+             color: rgba(255,255,255,0.9) !important;
+             transition: all 0.3s ease;
+             font-weight: 500;
+             padding: 15px 20px;
+         }
+         .nav li a:hover {
+             color: white !important;
+             transform: translateY(-2px);
+             background: transparent !important;
+         }
+         #suggestions {
+             border: 1px solid #ccc;
+             max-height: 150px;
+             overflow-y: auto;
+             width: 100%;
+             display: none;
+             position: absolute;
+             background-color: white;
+             z-index: 1000;
+         }
+         .suggestion-item {
+             padding: 8px;
+             cursor: pointer;
+             color: black;
+         }
+         .suggestion-item:hover {
+             background-color: #f0f0f0;
+         }
+     </style>
+ </head>
+ <body style="background-color: black">
+ 
+     <nav class="navbar">
+         <div class="container">
+             <div class="navbar-header">
+                 <a class="navbar-brand">My Book Recommender</a>
+             </div>
+             <ul class="nav navbar-nav">
+                 <li><a href="/">Home</a></li>
+                 <li><a href="/recommend">Recommend by Book</a></li>
+                 <li><a href="/author">Recommend by Author</a></li>
+                 <li><a href="/genres">Recommend by Genre</a></li>
+                 <li><a href="{{ url_for('audiobooks.audiobooks') }}">Premium</a></li>
+                 <li><a>Contact</a></li>
+             </ul>
+         </div>
+     </nav>
+ 
+     <div class="container">
+         <div class="row">
+             <div class="col-md-12">
+                 <h1 class="text-white" style="font-size: 50px">Recommend Books</h1>
+                 <form action="/recommend_books" method="post">
+                     <input name="user_input" id="book_input" type="text" class="form-control" autocomplete="off"><br>
+                     <div id="suggestions"></div>
+                     <input type="submit" class="btn btn-lg btn-warning">
+                 </form>
+             </div>
+ 
+             {% if data %}
+                 {% for i in data %}
+                     <div class="col-md-3" style="margin-top: 50px">
+                         <div class="card">
+                             <div class="card-body">
+                                 <img class="card-img-top" src="{{ i[2] }}">
+                                 <p class="text-white">{{ i[0] }}</p>
+                                 <h4 class="text-white">{{ i[1] }}</h4>
+                             </div>
+                         </div>
+                     </div>
+                 {% endfor %}
+             {% endif %}
+         </div>
+     </div>
+ 
+     <script>
+         const bookInput = document.getElementById('book_input');
+         const suggestionsDiv = document.getElementById('suggestions');
+ 
+         bookInput.addEventListener('input', async function () {
+             const query = this.value;
+             if (query.length < 2) {
+                 suggestionsDiv.style.display = 'none';
+                 return;
+             }
+ 
+             const response = await fetch(`/autocomplete?query=${query}`);
+             const suggestions = await response.json();
+ 
+             if (suggestions.length > 0) {
+                 suggestionsDiv.innerHTML = suggestions.map(book => `
+                     <div class="suggestion-item" onclick="selectSuggestion('${book}')">${book}</div>
+                 `).join('');
+                 suggestionsDiv.style.display = 'block';
+             } else {
+                 suggestionsDiv.style.display = 'none';
+             }
+         });
+ 
+         function selectSuggestion(book) {
+             bookInput.value = book;
+             suggestionsDiv.style.display = 'none';
+         }
+     </script>
+ 
+ </body>
+ </html>
