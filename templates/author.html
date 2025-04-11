@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .text-white {
+            color: white;
+        }
+        .card-img-top {
+            height: 300px;
+            object-fit: cover;
+        }
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            z-index: 99;
+            background: #fff;
+            width: calc(100% - 30px);
+        }
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .autocomplete-item:hover {
+            background-color: #e9e9e9;
+        }
+        .navbar {
+            background: #56a883;
+            border-radius: 0;
+            border: none;
+            margin-bottom: 30px;
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 20px;
+        }
+        .nav li a {
+            color: rgba(255,255,255,0.9) !important;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            padding: 15px 20px;
+        }
+        .nav li a:hover {
+            color: white !important;
+            transform: translateY(-2px);
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body style="background-color: black">
+
+    <!-- <nav class="navbar" style="background-color: #56a883">
+        <a class="navbar-brand">My Book Recommender</a>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/recommend">Recommend by Book</a></li>
+            <li><a href="/author">Recommend by Author</a></li>
+            <li><a href="/genres">Recommend by Genre</a></li>
+            <li><a href="{{ url_for('audiobooks.audiobooks') }}">premiumUser</a></li>
+            <li><a>Contact</a></li>
+        </ul>
+    </nav> -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand">My Book Recommender</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recommend">Recommend by Book</a></li>
+                <li><a href="/author">Recommend by Author</a></li>
+                <li><a href="/genres">Recommend by Genre</a></li>
+                <li><a href="{{ url_for('audiobooks.audiobooks') }}">Premium</a></li>
+                <li><a>Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-white" style="font-size: 50px">Recommend Books by Author</h1>
+                <form action="/recommend_by_author" method="post" autocomplete="off">
+                    <div class="autocomplete" style="position: relative;">
+                        <input 
+                            id="authorInput"
+                            name="user_input" 
+                            type="text" 
+                            class="form-control" 
+                            placeholder="Enter author name"
+                            required
+                        >
+                        <br>
+                        <input type="submit" class="btn btn-lg btn-warning" value="Search">
+                    </div>
+                </form>
+            </div>
+
+             
+            {% if data %}
+                {% for i in data %}
+                    <div class="col-md-3" style="margin-top: 50px">
+                        <div class="card" style="background-color: #2a2a2a">
+                            <div class="card-body">
+                                <img class="card-img-top" src="{{ i[2] }}" alt="Book Cover">
+                                <p class="text-white" style="margin-top: 10px">{{ i[0] }}</p>
+                                <h4 class="text-white">{{ i[1] }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% elif request.method == 'POST' %}
+                <div class="col-md-12" style="margin-top: 30px">
+                    {% if message %}
+                        <h3 class="text-white">{{ message }}</h3>
+                    {% else %}
+                        <h3 class="text-white">No recommendations found for this author.</h3>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Autocomplete functionality
+        function autocomplete(inp, endpoint) {
+            let currentFocus;
+            
+            inp.addEventListener("input", function(e) {
+                const val = this.value;
+                closeAllLists();
+                if (!val) return false;
+                
+                currentFocus = -1;
+                
+                // Debounce implementation
+                clearTimeout(window.autocompleteTimeout);
+                window.autocompleteTimeout = setTimeout(async () => {
+                    const response = await fetch(`${endpoint}?q=${encodeURIComponent(val)}`);
+                    const authors = await response.json();
+                    
+                    const list = document.createElement("div");
+                    list.setAttribute("class", "autocomplete-items");
+                    
+                    authors.forEach(author => {
+                        const item = document.createElement("div");
+                        item.innerHTML = `<strong>${author.substr(0, val.length)}</strong>${author.substr(val.length)}`;
+                        item.innerHTML += "<input type='hidden' value='" + author + "'>";
+                        item.classList.add("autocomplete-item");
+                        item.addEventListener("click", function() {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        list.appendChild(item);
+                    });
+                    
+                    this.parentNode.appendChild(list);
+                }, 300);
+            });
+
+            function closeAllLists(elmnt) {
+                const items = document.getElementsByClassName("autocomplete-items");
+                for (let i = 0; i < items.length; i++) {
+                    if (elmnt != items[i] && elmnt != inp) {
+                        items[i].parentNode.removeChild(items[i]);
+                    }
+                }
+            }
+
+            document.addEventListener("click", function(e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        // Initialize autocomplete on author input
+        autocomplete(document.getElementById("authorInput"), "/get_authors");
+    </script>
+
+</body>
+</html> 
