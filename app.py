@@ -1,10 +1,20 @@
 from flask import Flask, render_template, request, jsonify
+import json
+from pathlib import Path
 from AudioBookFeature.audio import audiobooks_bp
 import pickle
 import numpy as np
 import requests
 import os
 from collections import defaultdict
+
+# Load config from JSON file
+config_path = Path(__file__).parent / 'config.json'  # Ensures correct path
+with open(config_path) as config_file:
+    config = json.load(config_file)
+
+# Then access the API key like this:
+GOOGLE_BOOKS_API_KEY = config.get('GOOGLE_BOOKS_API_KEY')
 
 # Load precomputed data
 popular_df = pickle.load(open('popular.pkl', 'rb'))
@@ -23,7 +33,7 @@ app = Flask(__name__)
 app.register_blueprint(audiobooks_bp, url_prefix='/audiobooks')
 
 # Use environment variable for API key
-GOOGLE_BOOKS_API_KEY = os.getenv('GOOGLE_BOOKS_API_KEY', 'AIzaSyCgnf0Rtv57uo-PjRRz48sRG2v_WU1wZr8')
+#GOOGLE_BOOKS_API_KEY = os.getenv('GOOGLE_BOOKS_API_KEY', 'AIzaSyCgnf0Rtv57uo-PjRRz48sRG2v_WU1wZr8')
 
 @app.route('/')
 def index():
